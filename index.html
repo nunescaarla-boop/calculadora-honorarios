@@ -441,6 +441,46 @@
       color: var(--sand);
     }
 
+    /* ── Mínimo a cobrar ── */
+    .minimo-box {
+      margin-top: 0;
+      background: var(--cream);
+      border: 1px solid var(--blush);
+      border-top: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .minimo-box .min-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .minimo-box .min-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--slate);
+    }
+
+    .minimo-box .min-desc {
+      font-size: 0.75rem;
+      color: var(--slate);
+      font-weight: 300;
+    }
+
+    .minimo-box .min-valor {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.45rem;
+      color: var(--sand);
+      white-space: nowrap;
+    }
+
     /* Detalhamento */
     .breakdown {
       margin-top: 0;
@@ -629,6 +669,15 @@
         </div>
       </div>
 
+      <!-- Mínimo a ser cobrado -->
+      <div class="minimo-box">
+        <div class="min-info">
+          <span class="min-label">Mínimo a ser cobrado</span>
+          <span class="min-desc">Horas × valor/hora, sem acréscimos</span>
+        </div>
+        <span class="min-valor" id="val-minimo">R$ 0,00</span>
+      </div>
+
       <!-- Detalhamento dos fatores -->
       <div class="breakdown">
         <div class="breakdown-title">Composição do valor</div>
@@ -744,7 +793,11 @@
       // Valor final: aplica parcelamento e urgência
       const valorFinal  = aposMultipl * (1 + parcelamento) * (1 + urgencia);
 
+      // ── Mínimo: apenas horas × hora base, sem nenhum fator adicional ──
+      const valorMinimo = totalHoras * horaBase;
+
       // ── Exibição ──
+      document.getElementById('val-minimo').textContent    = formatBRL(valorMinimo);
       document.getElementById('val-final').textContent     = formatBRL(valorFinal);
       document.getElementById('val-avista').textContent    = formatBRL(valorAvista);
       document.getElementById('val-parcelado').textContent = formatBRL(valorFinal);

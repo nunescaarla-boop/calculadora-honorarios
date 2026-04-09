@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Honorários Advocatícios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Paleta ── */
+    :root {
+      --navy:    #233959;
+      --slate:   #637c90;
+      --sand:    #c3a38d;
+      --blush:   #eedbc6;
+      --cream:   #fff7ee;
+      --white:   #ffffff;
+      --ink:     #1a2535;
+    }
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1rem 4rem;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 2.25rem;
+    }
+
+    .header-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--sand);
+      margin-bottom: 0.5rem;
+    }
+
+    header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.1rem;
+      font-weight: 400;
+      color: var(--navy);
+      line-height: 1.15;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--slate);
+      margin-top: 0.45rem;
+    }
+
+    /* ── Linha decorativa ── */
+    .divider-ornament {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0.75rem auto 0;
+      width: fit-content;
+    }
+
+    .divider-ornament span {
+      display: block;
+      width: 48px;
+      height: 1px;
+      background: var(--sand);
+      opacity: 0.6;
+    }
+
+    .divider-ornament i {
+      width: 6px;
+      height: 6px;
+      background: var(--sand);
+      border-radius: 50%;
+      display: block;
+    }
+
+    /* ── Card principal ── */
+    .card {
+      background: var(--white);
+      border-radius: 4px;
+      box-shadow: 0 2px 32px rgba(35,57,89,0.10), 0 1px 4px rgba(35,57,89,0.06);
+      padding: 2.25rem 2rem;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    /* ── Seção dentro do card ── */
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--navy);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--blush);
+    }
+
+    /* ── Bloco de horas por categoria ── */
+    .horas-block {
+      background: var(--cream);
+      border: 1px solid var(--blush);
+      border-radius: 4px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .horas-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.55rem 0;
+    }
+
+    .horas-row + .horas-row {
+      border-top: 1px solid var(--blush);
+    }
+
+    .horas-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--navy);
+    }
+
+    .horas-label small {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--slate);
+      margin-top: 0.1rem;
+    }
+
+    .horas-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .horas-input-wrap input {
+      width: 72px;
+      text-align: right;
+    }
+
+    .horas-input-wrap span {
+      font-size: 0.78rem;
+      color: var(--slate);
+      white-space: nowrap;
+    }
+
+    /* ── Total horas (dinâmico) ── */
+    .horas-total {
+      margin-top: 0.9rem;
+      padding-top: 0.9rem;
+      border-top: 1.5px solid var(--blush);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .horas-total .ht-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--slate);
+    }
+
+    .horas-total .ht-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--navy);
+    }
+
+    .horas-total .ht-value span {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--slate);
+      margin-left: 0.3rem;
+    }
+
+    /* ── Grupos de campo ── */
+    .field-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--slate);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    input[type="number"],
+    select {
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--blush);
+      border-radius: 4px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23637c90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.85rem center;
+      padding-right: 2.2rem;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      border-color: var(--sand);
+      box-shadow: 0 0 0 3px rgba(195,163,141,0.18);
+      background: var(--cream);
+    }
+
+    /* ── Checkbox Urgência ── */
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.75rem 0.9rem;
+      background: var(--cream);
+      border: 1px solid var(--blush);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+    }
+
+    .checkbox-field:hover {
+      border-color: var(--sand);
+      background: #fdf3e8;
+    }
+
+    .checkbox-field input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--navy);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-field .cb-text {
+      font-size: 0.88rem;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .checkbox-field .badge {
+      margin-left: auto;
+      background: var(--blush);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Divisor ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--blush);
+      margin: 1.5rem 0;
+    }
+
+    /* ── Botão calcular ── */
+    button#calcular {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--navy);
+      color: var(--cream);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button#calcular:hover {
+      background: #1a2d47;
+    }
+
+    button#calcular:active {
+      transform: scale(0.99);
+    }
+
+    /* ── Resultado ── */
+    #resultado {
+      display: none;
+      margin-top: 2rem;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Banner principal */
+    .resultado-banner {
+      background: var(--navy);
+      border-radius: 4px 4px 0 0;
+      padding: 1.75rem 1.5rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resultado-banner::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 140px; height: 140px;
+      background: rgba(195,163,141,0.12);
+      border-radius: 50%;
+    }
+
+    .resultado-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; left: -20px;
+      width: 100px; height: 100px;
+      background: rgba(195,163,141,0.08);
+      border-radius: 50%;
+    }
+
+    .resultado-banner .rb-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sand);
+      margin-bottom: 0.5rem;
+      position: relative; z-index: 1;
+    }
+
+    .resultado-banner .rb-valor {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.6rem;
+      font-weight: 400;
+      color: var(--cream);
+      letter-spacing: -0.5px;
+      line-height: 1;
+      position: relative; z-index: 1;
+    }
+
+    .resultado-banner .rb-sub {
+      font-size: 0.75rem;
+      color: rgba(238,219,198,0.6);
+      margin-top: 0.4rem;
+      position: relative; z-index: 1;
+    }
+
+    /* Cartões de valores */
+    .resultado-valores {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--blush);
+      border-top: none;
+    }
+
+    .rv-item {
+      padding: 1.1rem 1.25rem;
+      text-align: center;
+    }
+
+    .rv-item + .rv-item {
+      border-left: 1px solid var(--blush);
+    }
+
+    .rv-item .rv-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--slate);
+      margin-bottom: 0.35rem;
+    }
+
+    .rv-item .rv-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--navy);
+    }
+
+    .rv-item.rv-destaque {
+      background: var(--cream);
+    }
+
+    .rv-item.rv-destaque .rv-val {
+      color: var(--sand);
+    }
+
+    /* Detalhamento */
+    .breakdown {
+      margin-top: 0;
+      background: var(--white);
+      border: 1px solid var(--blush);
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      padding: 1.1rem 1.25rem;
+    }
+
+    .breakdown-title {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--sand);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--blush);
+    }
+
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--slate);
+      padding: 0.28rem 0;
+    }
+
+    .breakdown-item span:last-child {
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    /* ── Responsivo ── */
+    @media (max-width: 500px) {
+      .field-group { grid-template-columns: 1fr; }
+      .field.full  { grid-column: 1; }
+      header h1    { font-size: 1.65rem; }
+      .resultado-valores { grid-template-columns: 1fr; }
+      .rv-item + .rv-item { border-left: none; border-top: 1px solid var(--blush); }
+      .card { padding: 1.5rem 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="header-eyebrow">Gestão de Honorários</p>
+    <h1>Calculadora de Honorários<br>Advocatícios</h1>
+    <div class="divider-ornament">
+      <span></span><i></i><span></span>
+    </div>
+    <p>Precificação baseada em horas, complexidade e condições do caso</p>
+  </header>
+
+  <div class="card">
+
+    <!-- ══ SEÇÃO 1: HORAS POR CATEGORIA ══ -->
+    <h2 class="section-title">Horas do caso</h2>
+
+    <div class="horas-block">
+
+      <!-- Peticionamento / Redação -->
+      <div class="horas-row">
+        <div class="horas-label">
+          Peticionamento &amp; Redação
+          <small>Peças, contratos, pareceres e documentos</small>
+        </div>
+        <div class="horas-input-wrap">
+          <input type="number" id="h-peticao" min="0" step="0.5" placeholder="0" />
+          <span>h</span>
+        </div>
+      </div>
+
+      <!-- Atendimento / Reuniões -->
+      <div class="horas-row">
+        <div class="horas-label">
+          Atendimento &amp; Reuniões
+          <small>Consultas, videoconferências e alinhamentos</small>
+        </div>
+        <div class="horas-input-wrap">
+          <input type="number" id="h-atend" min="0" step="0.5" placeholder="0" />
+          <span>h</span>
+        </div>
+      </div>
+
+      <!-- Audiências -->
+      <div class="horas-row">
+        <div class="horas-label">
+          Audiências
+          <small>Sessões, oitivas e atos processuais presenciais</small>
+        </div>
+        <div class="horas-input-wrap">
+          <input type="number" id="h-audiencia" min="0" step="0.5" placeholder="0" />
+          <span>h</span>
+        </div>
+      </div>
+
+      <!-- Total calculado dinamicamente -->
+      <div class="horas-total">
+        <span class="ht-label">Total de horas</span>
+        <span class="ht-value" id="total-horas">0 <span>horas</span></span>
+      </div>
+
+    </div>
+
+    <!-- ══ SEÇÃO 2: PARÂMETROS DO CASO ══ -->
+    <h2 class="section-title">Parâmetros</h2>
+
+    <div class="field-group">
+
+      <!-- Valor da hora base -->
+      <div class="field full">
+        <label for="hora-base">Valor da Hora Base (R$)</label>
+        <input type="number" id="hora-base" placeholder="Ex: 350,00" min="0" step="0.01" />
+      </div>
+
+      <!-- Complexidade -->
+      <div class="field">
+        <label for="complexidade">Complexidade</label>
+        <select id="complexidade">
+          <option value="0.10">A — Baixa (+10%)</option>
+          <option value="0.20">B — Média (+20%)</option>
+          <option value="0.30" selected>C — Alta (+30%)</option>
+          <option value="0.40">D — Muito Alta (+40%)</option>
+        </select>
+      </div>
+
+      <!-- Tempo do processo -->
+      <div class="field">
+        <label for="tempo">Duração Estimada</label>
+        <select id="tempo">
+          <option value="0.10" selected>1–2 anos (+10%)</option>
+          <option value="0.20">3–4 anos (+20%)</option>
+        </select>
+      </div>
+
+      <!-- Parcelamento -->
+      <div class="field full">
+        <label for="parcelamento">Forma de Pagamento</label>
+        <select id="parcelamento">
+          <option value="0.00">À vista (sem acréscimo)</option>
+          <option value="0.10">Até 3× (+10%)</option>
+          <option value="0.20">Até 6× (+20%)</option>
+        </select>
+      </div>
+
+      <!-- Urgência -->
+      <div class="field full">
+        <label>Urgência</label>
+        <label class="checkbox-field">
+          <input type="checkbox" id="urgencia" />
+          <span class="cb-text">Caso urgente — prazo reduzido ou demanda imediata</span>
+          <span class="badge">+10%</span>
+        </label>
+      </div>
+
+    </div>
+
+    <hr />
+
+    <!-- ── Botão calcular ── -->
+    <button id="calcular">Calcular Honorários</button>
+
+    <!-- ══ RESULTADO ══ -->
+    <div id="resultado">
+
+      <!-- Banner com valor final -->
+      <div class="resultado-banner">
+        <div class="rb-label">Honorários totais estimados</div>
+        <div class="rb-valor" id="val-final">R$ 0,00</div>
+        <div class="rb-sub" id="rb-horas-sub">—</div>
+      </div>
+
+      <!-- À vista vs parcelado -->
+      <div class="resultado-valores">
+        <div class="rv-item rv-destaque">
+          <div class="rv-label">Valor à vista</div>
+          <div class="rv-val" id="val-avista">R$ 0,00</div>
+        </div>
+        <div class="rv-item">
+          <div class="rv-label">Com parcelamento</div>
+          <div class="rv-val" id="val-parcelado">R$ 0,00</div>
+        </div>
+      </div>
+
+      <!-- Detalhamento dos fatores -->
+      <div class="breakdown">
+        <div class="breakdown-title">Composição do valor</div>
+        <div class="breakdown-item">
+          <span>Horas totais do caso</span>
+          <span id="b-horas">—</span>
+        </div>
+        <div class="breakdown-item">
+          <span>Base calculada (horas × valor/hora)</span>
+          <span id="b-base">—</span>
+        </div>
+        <div class="breakdown-item">
+          <span>Fator de complexidade</span>
+          <span id="b-complexidade">—</span>
+        </div>
+        <div class="breakdown-item">
+          <span>Fator de duração</span>
+          <span id="b-tempo">—</span>
+        </div>
+        <div class="breakdown-item">
+          <span>Multiplicador de responsabilidade (×2)</span>
+          <span>×2,00</span>
+        </div>
+        <div class="breakdown-item">
+          <span>Fator de parcelamento</span>
+          <span id="b-parcelamento">—</span>
+        </div>
+        <div class="breakdown-item">
+          <span>Fator de urgência</span>
+          <span id="b-urgencia">—</span>
+        </div>
+      </div>
+
+    </div><!-- /#resultado -->
+
+  </div><!-- /.card -->
+
+  <script>
+    /**
+     * Formata número como moeda brasileira (R$ X.XXX,XX)
+     */
+    function formatBRL(value) {
+      return value.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2
+      });
+    }
+
+    /**
+     * Atualiza o total de horas dinamicamente enquanto o usuário digita
+     */
+    function atualizarTotalHoras() {
+      const h1 = parseFloat(document.getElementById('h-peticao').value)  || 0;
+      const h2 = parseFloat(document.getElementById('h-atend').value)    || 0;
+      const h3 = parseFloat(document.getElementById('h-audiencia').value) || 0;
+      const total = h1 + h2 + h3;
+
+      const el = document.getElementById('total-horas');
+      const label = total === 1 ? 'hora' : 'horas';
+      el.innerHTML = `${total.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} <span>${label}</span>`;
+    }
+
+    // Atualiza o total em tempo real
+    ['h-peticao', 'h-atend', 'h-audiencia'].forEach(id => {
+      document.getElementById(id).addEventListener('input', atualizarTotalHoras);
+    });
+
+    /**
+     * Calcula e exibe os honorários.
+     *
+     * Fórmula:
+     *   Valor = (TotalHoras × HoraBase)
+     *         × (1 + Complexidade)
+     *         × (1 + Tempo)
+     *         × 2
+     *         × (1 + Parcelamento)
+     *         × (1 + Urgência)
+     */
+    document.getElementById('calcular').addEventListener('click', function () {
+
+      // ── Leitura dos inputs ──
+      const hPeticao   = parseFloat(document.getElementById('h-peticao').value)   || 0;
+      const hAtend     = parseFloat(document.getElementById('h-atend').value)     || 0;
+      const hAudiencia = parseFloat(document.getElementById('h-audiencia').value) || 0;
+      const totalHoras = hPeticao + hAtend + hAudiencia;
+
+      const horaBase     = parseFloat(document.getElementById('hora-base').value) || 0;
+      const complexidade = parseFloat(document.getElementById('complexidade').value);
+      const tempo        = parseFloat(document.getElementById('tempo').value);
+      const parcelamento = parseFloat(document.getElementById('parcelamento').value);
+      const urgencia     = document.getElementById('urgencia').checked ? 0.10 : 0;
+
+      // ── Validação básica ──
+      if (totalHoras <= 0) {
+        alert('Informe ao menos uma categoria de horas.');
+        return;
+      }
+      if (horaBase <= 0) {
+        alert('Informe o valor da hora base.');
+        return;
+      }
+
+      // ── Cálculo passo a passo ──
+      const base          = totalHoras * horaBase;
+      const aposComplexid = base         * (1 + complexidade);
+      const aposTempo     = aposComplexid * (1 + tempo);
+      const aposMultipl   = aposTempo     * 2;
+
+      // Valor à vista: aplica urgência mas NOT parcelamento
+      const valorAvista = aposMultipl * (1 + urgencia);
+
+      // Valor final: aplica parcelamento e urgência
+      const valorFinal  = aposMultipl * (1 + parcelamento) * (1 + urgencia);
+
+      // ── Exibição ──
+      document.getElementById('val-final').textContent     = formatBRL(valorFinal);
+      document.getElementById('val-avista').textContent    = formatBRL(valorAvista);
+      document.getElementById('val-parcelado').textContent = formatBRL(valorFinal);
+
+      // Subtítulo do banner
+      const horaLabel = totalHoras === 1 ? 'hora' : 'horas';
+      document.getElementById('rb-horas-sub').textContent =
+        `${totalHoras.toLocaleString('pt-BR', {maximumFractionDigits:1})} ${horaLabel} × ${formatBRL(horaBase)}/hora`;
+
+      // ── Detalhamento ──
+      document.getElementById('b-horas').textContent =
+        `${totalHoras.toLocaleString('pt-BR', {maximumFractionDigits:1})} h`
+        + (hPeticao || hAtend || hAudiencia
+          ? ` (${[
+              hPeticao   ? `${hPeticao}h petição`   : '',
+              hAtend     ? `${hAtend}h atend.`       : '',
+              hAudiencia ? `${hAudiencia}h audiência` : ''
+            ].filter(Boolean).join(' + ')})`
+          : '');
+
+      document.getElementById('b-base').textContent =
+        formatBRL(base);
+
+      document.getElementById('b-complexidade').textContent =
+        `×${(1 + complexidade).toFixed(2)}  (+${(complexidade * 100).toFixed(0)}%)`;
+
+      document.getElementById('b-tempo').textContent =
+        `×${(1 + tempo).toFixed(2)}  (+${(tempo * 100).toFixed(0)}%)`;
+
+      document.getElementById('b-parcelamento').textContent = parcelamento > 0
+        ? `×${(1 + parcelamento).toFixed(2)}  (+${(parcelamento * 100).toFixed(0)}%)`
+        : '×1,00  (à vista)';
+
+      document.getElementById('b-urgencia').textContent = urgencia > 0
+        ? '×1,10  (+10%)'
+        : '×1,00  (sem urgência)';
+
+      // ── Mostrar resultado com animação ──
+      const res = document.getElementById('resultado');
+      res.style.display = 'none';
+      void res.offsetWidth;
+      res.style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>
